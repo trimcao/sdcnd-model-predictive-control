@@ -118,25 +118,19 @@ int main() {
           double steer_value;
           double throttle_value;
 
-          // double x = state[0];
-          // double y = state[1];
-          // double psi = state[2];
-          // double v = state[3];
-          // double cte = state[4];
-          // double epsi = state[5];
-
           Eigen::VectorXd x0(6);
           x0 << px, py, psi, v, cte, epsi;
 
           std::vector<double> actuators = mpc.Solve(x0, coeffs);
-          std::cout << "Pass" << std::endl;
           steer_value = -1*actuators[0]; // flip the sign of the steer_value due to the Udacity simulator
           throttle_value = actuators[1];
+          std::cout << "Steer Value: " << steer_value << std::endl;
+          std::cout << "Throttle Value: " << throttle_value << std::endl; 
 
           json msgJson;
           // NOTE: Remember to divide by deg2rad(25) before you send the steering value back.
           // Otherwise the values will be in between [-deg2rad(25), deg2rad(25] instead of [-1, 1].
-          msgJson["steering_angle"] = steer_value;
+          msgJson["steering_angle"] = steer_value/deg2rad(25);
           msgJson["throttle"] = throttle_value;
 
           //Display the MPC predicted trajectory 
@@ -145,6 +139,11 @@ int main() {
 
           //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system
           // the points in the simulator are connected by a Green line
+
+          // for (int t = 0; t < ptsx.size(); t++) {
+            mpc_x_vals.push_back(10.0);
+            mpc_y_vals.push_back(0.0);
+          // }
 
           msgJson["mpc_x"] = mpc_x_vals;
           msgJson["mpc_y"] = mpc_y_vals;
@@ -155,6 +154,11 @@ int main() {
 
           //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system
           // the points in the simulator are connected by a Yellow line
+
+          // for (int t = 0; t < ptsx.size(); t++) {
+            // next_x_vals.push_back(ptsx[t]);
+            // next_y_vals.push_back(ptsy[t]);
+          // }
 
           msgJson["next_x"] = next_x_vals;
           msgJson["next_y"] = next_y_vals;

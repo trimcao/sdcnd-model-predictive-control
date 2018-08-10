@@ -6,7 +6,7 @@
 using CppAD::AD;
 
 // TODO: Set the timestep length and duration
-size_t N = 10;
+size_t N = 20;
 double dt = 0.05;
 
 // This value assumes the model presented in the classroom is used.
@@ -23,7 +23,7 @@ const double Lf = 2.67;
 
 // Both the reference cross track and orientation errors are 0.
 // The reference velocity is set to 40 mph.
-double ref_v = 40;
+double ref_v = 20;
 
 // The solver takes all the state variables and actuator
 // variables in a singular vector. Thus, we should to establish
@@ -117,9 +117,6 @@ class FG_eval {
       // fg[1 + epsi_start + t] = epsi1 - (epsi0 + (v0/Lf) * delta0 * dt);
       fg[1 + cte_start + t] = cte1 - ((f0 - y0) + (v0 * CppAD::sin(epsi0) * dt));
       fg[1 + epsi_start + t] = epsi1 - ((psi0 - psides0) + v0 * delta0 / Lf * dt);
-
-      std::cout << "FG method initialized done..." << std::endl;
-
     }
   }
 };
@@ -215,7 +212,6 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   constraints_upperbound[epsi_start] = epsi;
   // object that computes objective and constraints
   FG_eval fg_eval(coeffs);
-  std::cout << "Before running optmization..." << std::endl;
 
   //
   // NOTE: You don't have to worry about these options
