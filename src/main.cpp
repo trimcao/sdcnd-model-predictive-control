@@ -92,6 +92,23 @@ int main() {
           double psi = j[1]["psi"];
           double v = j[1]["speed"];
 
+          Eigen::VectorXd x_vals(ptsx.size()); 
+          Eigen::VectorXd y_vals(ptsy.size()); 
+          // Eigen::Map<VectorXd> v2(ptsx);
+          for (int t = 0; t < ptsx.size(); t++) {
+            x_vals[t] = ptsx[t];
+            y_vals[t] = ptsy[t];
+          }
+
+          auto coeffs = polyfit(x_vals, y_vals, 3);
+          std::cout << "Size of coeffs: " << coeffs.size() << std::endl;
+          // The cross track error is calculated by evaluating at polynomial at x, f(x)
+          // and subtracting y.
+          double cte = polyeval(coeffs, px) - py;
+          // Due to the sign starting at 0, the orientation error is -f'(x).
+          // derivative of coeffs[0] + coeffs[1] * x + coeffs[2] * x^2 + coeffs[3] * x^3 -> coeffs[1]
+          double epsi = psi - atan(coeffs[1] + coeffs[2]*2*px + coeffs[3]*3*pow(px, 2));
+
           /*
           * TODO: Calculate steering angle and throttle using MPC.
           *
@@ -100,6 +117,21 @@ int main() {
           */
           double steer_value;
           double throttle_value;
+
+          // double x = state[0];
+          // double y = state[1];
+          // double psi = state[2];
+          // double v = state[3];
+          // double cte = state[4];
+          // double epsi = state[5];
+
+          Eigen::VectorXd x0(6);
+          x0 << px, py, psi, v, cte, epsi;
+
+          std::vector<double> actuators = mpc.Solve(x0, coeffs);
+          std::cout << "Pass" << std::endl;
+          steer_value = -1*actuators[0]; // flip the sign of the steer_value due to the Udacity simulator
+          throttle_value = actuators[1];
 
           json msgJson;
           // NOTE: Remember to divide by deg2rad(25) before you send the steering value back.
