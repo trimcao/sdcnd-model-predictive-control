@@ -23,7 +23,7 @@ const double Lf = 2.67;
 
 // Both the reference cross track and orientation errors are 0.
 // The reference velocity is set to 40 mph.
-double ref_v = 20;
+double ref_v = 40;
 
 // The solver takes all the state variables and actuator
 // variables in a singular vector. Thus, we should to establish
@@ -45,7 +45,7 @@ class FG_eval {
 
   typedef CPPAD_TESTVECTOR(AD<double>) ADvector;
   void operator()(ADvector& fg, const ADvector& vars) {
-    // TODO: implement MPC
+    // implement MPC
     // `fg` a vector of the cost constraints, `vars` is a vector of variable values (state & actuators)
     // NOTE: You'll probably go back and forth between this function and
     // the Solver function below.
@@ -143,7 +143,7 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   // element vector and there are 10 timesteps. The number of variables is:
   //
   // 4 * 10 + 2 * 9
-  size_t n_vars = N*6 + (N+1)*2;
+  size_t n_vars = N*6 + (N-1)*2;
   // TODO: Set the number of constraints
   size_t n_constraints = N*6;
 
@@ -251,5 +251,13 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   //
   // {...} is shorthand for creating a vector, so auto x1 = {1.0,2.0}
   // creates a 2 element double vector.
-  return {solution.x[delta_start], solution.x[a_start]};
+  std::vector<double> result;
+  result.push_back(solution.x[delta_start]);
+  result.push_back(solution.x[a_start]);
+  // for (uint t = 1; t < N-1; t++) {
+    // result.push_back(solution.x[])
+  // } 
+  // return {solution.x[delta_start], solution.x[a_start]};
+  std::cout << "size of solution: " << solution.x.size() << std::endl;
+  return result;
 }

@@ -94,23 +94,25 @@ int main() {
 
           Eigen::VectorXd x_vals(ptsx.size()); 
           Eigen::VectorXd y_vals(ptsy.size()); 
-          // Eigen::Map<VectorXd> v2(ptsx);
-          for (int t = 0; t < ptsx.size(); t++) {
-            x_vals[t] = ptsx[t];
-            y_vals[t] = ptsy[t];
+          for (uint t = 0; t < ptsx.size(); t++) {
+            x_vals[t] = (ptsx[t]-px) * cos(-psi) - sin(-psi)*(ptsy[t]-py); 
+            y_vals[t] = (ptsx[t]-px) * sin(-psi) + cos(-psi)*(ptsy[t]-py); 
+            // std::cout << "x: " << x_vals[t] << std::endl;
+            // std::cout << "y: " << y_vals[t] << std::endl;
           }
 
           auto coeffs = polyfit(x_vals, y_vals, 3);
           std::cout << "Size of coeffs: " << coeffs.size() << std::endl;
           // The cross track error is calculated by evaluating at polynomial at x, f(x)
           // and subtracting y.
-          double cte = polyeval(coeffs, px) - py;
+          double cte = polyeval(coeffs, 0.0);
           // Due to the sign starting at 0, the orientation error is -f'(x).
           // derivative of coeffs[0] + coeffs[1] * x + coeffs[2] * x^2 + coeffs[3] * x^3 -> coeffs[1]
-          double epsi = psi - atan(coeffs[1] + coeffs[2]*2*px + coeffs[3]*3*pow(px, 2));
+          // double epsi = psi - atan(coeffs[1] + coeffs[2]*2*px + coeffs[3]*3*pow(px, 2));
+          double epsi = psi - atan(coeffs[1]);
 
           /*
-          * TODO: Calculate steering angle and throttle using MPC.
+          * Calculate steering angle and throttle using MPC.
           *
           * Both are in between [-1, 1].
           *
@@ -119,7 +121,7 @@ int main() {
           double throttle_value;
 
           Eigen::VectorXd x0(6);
-          x0 << px, py, psi, v, cte, epsi;
+          x0 << 0.0, 0.0, 0.0, v, cte, epsi;
 
           std::vector<double> actuators = mpc.Solve(x0, coeffs);
           steer_value = -1*actuators[0]; // flip the sign of the steer_value due to the Udacity simulator
@@ -141,9 +143,18 @@ int main() {
           // the points in the simulator are connected by a Green line
 
           // for (int t = 0; t < ptsx.size(); t++) {
-            mpc_x_vals.push_back(10.0);
-            mpc_y_vals.push_back(0.0);
+          mpc_x_vals.push_back(10.0);
+          mpc_y_vals.push_back(0.0);
           // }
+          double vptsx;
+          double vptsy;
+          for (uint t = 0; t < x_vals.size(); t++) {
+            // vptsx = polyeval(coeffs, ptsx[t]);
+            // vptsx = (ptsx[t]-px) * cos(-psi) - sin(-psi)*(ptsy[t]-py); 
+            // vptsy = (ptsx[t]-px) * sin(-psi) + cos(-psi)*(ptsy[t]-py); 
+            // mpc_x_vals.push_back(vptsx);
+            // mpc_y_vals.push_back(vptsy);
+          }
 
           msgJson["mpc_x"] = mpc_x_vals;
           msgJson["mpc_y"] = mpc_y_vals;
@@ -154,11 +165,12 @@ int main() {
 
           //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system
           // the points in the simulator are connected by a Yellow line
-
-          // for (int t = 0; t < ptsx.size(); t++) {
-            // next_x_vals.push_back(ptsx[t]);
-            // next_y_vals.push_back(ptsy[t]);
-          // }
+          for (uint t = 0; t < x_vals.size(); t++) {
+            // vptsx = (ptsx[t]-px) * cos(-psi) - sin(-psi)*(ptsy[t]-py); 
+            // vptsy = (ptsx[t]-px) * sin(-psi) + cos(-psi)*(ptsy[t]-py); 
+            next_x_vals.push_back(x_vals[t]);
+            next_y_vals.push_back(y_vals[t]);
+          }
 
           msgJson["next_x"] = next_x_vals;
           msgJson["next_y"] = next_y_vals;
