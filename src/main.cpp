@@ -110,7 +110,7 @@ int main() {
           }
 
           auto coeffs = polyfit(x_vals, y_vals, 3);
-          std::cout << "Size of coeffs: " << coeffs.size() << std::endl;
+          // std::cout << "Size of coeffs: " << coeffs.size() << std::endl;
           // The cross track error is calculated by evaluating at polynomial at x, f(x)
           // and subtracting y.
           double cte = polyeval(coeffs, 0.0);
