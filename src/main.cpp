@@ -150,8 +150,8 @@ int main() {
           //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system
           // the points in the simulator are connected by a Green line
 
-          double N = 20;
-          for (uint t = 0; t < 15; t+=3) {
+          double N = 25;
+          for (uint t = 0; t < N-5; t+=4) {
             mpc_x_vals.push_back(results[t+2]);
             mpc_y_vals.push_back(results[t+2+N]);
           }
