@@ -123,9 +123,9 @@ int main() {
           Eigen::VectorXd x0(6);
           x0 << 0.0, 0.0, 0.0, v, cte, epsi;
 
-          std::vector<double> actuators = mpc.Solve(x0, coeffs);
-          steer_value = -1*actuators[0]; // flip the sign of the steer_value due to the Udacity simulator
-          throttle_value = actuators[1];
+          std::vector<double> results = mpc.Solve(x0, coeffs);
+          steer_value = -1*results[0]; // flip the sign of the steer_value due to the Udacity simulator
+          throttle_value = results[1];
           std::cout << "Steer Value: " << steer_value << std::endl;
           std::cout << "Throttle Value: " << throttle_value << std::endl; 
 
@@ -143,17 +143,18 @@ int main() {
           // the points in the simulator are connected by a Green line
 
           // for (int t = 0; t < ptsx.size(); t++) {
-          mpc_x_vals.push_back(10.0);
-          mpc_y_vals.push_back(0.0);
+          // mpc_x_vals.push_back(10.0);
+          // mpc_y_vals.push_back(0.0);
           // }
-          double vptsx;
-          double vptsy;
-          for (uint t = 0; t < x_vals.size(); t++) {
+          // double vptsx;
+          // double vptsy;
+          double N = 20;
+          for (uint t = 0; t < 15; t+=1) {
             // vptsx = polyeval(coeffs, ptsx[t]);
             // vptsx = (ptsx[t]-px) * cos(-psi) - sin(-psi)*(ptsy[t]-py); 
             // vptsy = (ptsx[t]-px) * sin(-psi) + cos(-psi)*(ptsy[t]-py); 
-            // mpc_x_vals.push_back(vptsx);
-            // mpc_y_vals.push_back(vptsy);
+            mpc_x_vals.push_back(results[t+2]);
+            mpc_y_vals.push_back(results[t+2+N]);
           }
 
           msgJson["mpc_x"] = mpc_x_vals;
