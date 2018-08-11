@@ -92,13 +92,21 @@ int main() {
           double psi = j[1]["psi"];
           double v = j[1]["speed"];
 
+
+          // simulate the vehicle in 100ms to account for latency
+          // assume that v and psi stays the same
+          double dt = 0.1;
+          px = px + v * cos(psi) * dt;
+          py = py + v * sin(psi) * dt;
+          // psi = psi0 + (v0/Lf) * delta0 * dt);
+          // v = v0 + a0*dt;
+
+          // transform waypoints from map coordinates to car coordinates
           Eigen::VectorXd x_vals(ptsx.size()); 
           Eigen::VectorXd y_vals(ptsy.size()); 
           for (uint t = 0; t < ptsx.size(); t++) {
             x_vals[t] = (ptsx[t]-px) * cos(-psi) - sin(-psi)*(ptsy[t]-py); 
             y_vals[t] = (ptsx[t]-px) * sin(-psi) + cos(-psi)*(ptsy[t]-py); 
-            // std::cout << "x: " << x_vals[t] << std::endl;
-            // std::cout << "y: " << y_vals[t] << std::endl;
           }
 
           auto coeffs = polyfit(x_vals, y_vals, 3);
@@ -142,17 +150,8 @@ int main() {
           //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system
           // the points in the simulator are connected by a Green line
 
-          // for (int t = 0; t < ptsx.size(); t++) {
-          // mpc_x_vals.push_back(10.0);
-          // mpc_y_vals.push_back(0.0);
-          // }
-          // double vptsx;
-          // double vptsy;
           double N = 20;
-          for (uint t = 0; t < 15; t+=1) {
-            // vptsx = polyeval(coeffs, ptsx[t]);
-            // vptsx = (ptsx[t]-px) * cos(-psi) - sin(-psi)*(ptsy[t]-py); 
-            // vptsy = (ptsx[t]-px) * sin(-psi) + cos(-psi)*(ptsy[t]-py); 
+          for (uint t = 0; t < 15; t+=3) {
             mpc_x_vals.push_back(results[t+2]);
             mpc_y_vals.push_back(results[t+2+N]);
           }
