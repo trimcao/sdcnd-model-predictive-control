@@ -2,7 +2,7 @@
 ---
 
 ### Model Predictive Control (MPC)
-MPC is an optimization model that predicts the actuator values to be used at each moment. In ths optimization model, we have the states in `N` timesteps, then we will find a set of actuator values (for each timestep) that minimize a cost function. The set of actuator values for the very first timestep will be used to control the car.
+MPC is an optimization model that predicts the actuator values to be used at each moment. In ths optimization model, we have the states in `N` timesteps, then we will find a set of actuator values (for each timestep) that minimizes a cost function. The set of actuator values for the very first timestep will be used to control the car.
 
 A state of the car consists of the following values:
 * `x`: the position of the car in x-axis (either in map coordinates or in vehicle coordinates).
