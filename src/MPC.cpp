@@ -113,8 +113,6 @@ class FG_eval {
       fg[1 + y_start + t] = y1 - (y0 + v0 * CppAD::sin(psi0) * dt); 
       fg[1 + psi_start + t] = psi1 - (psi0 + (v0/Lf) * delta0 * dt);
       fg[1 + v_start + t] = v1 - (v0 + a0*dt);
-      // fg[1 + cte_start + t] = cte1 - (cte0 + v0 * CppAD::sin(epsi0) * dt);
-      // fg[1 + epsi_start + t] = epsi1 - (epsi0 + (v0/Lf) * delta0 * dt);
       fg[1 + cte_start + t] = cte1 - ((f0 - y0) + (v0 * CppAD::sin(epsi0) * dt));
       fg[1 + epsi_start + t] = epsi1 - ((psi0 - psides0) + v0 * delta0 / Lf * dt);
     }
@@ -144,7 +142,7 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   //
   // 4 * 10 + 2 * 9
   size_t n_vars = N*6 + (N-1)*2;
-  // TODO: Set the number of constraints
+  // Set the number of constraints
   size_t n_constraints = N*6;
 
   // Initial value of the independent variables.
@@ -164,7 +162,7 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
 
   Dvector vars_lowerbound(n_vars);
   Dvector vars_upperbound(n_vars);
-  // TODO: Set lower and upper limits for variables.
+  // Set lower and upper limits for variables.
 
   // Set all non-actuators upper and lowerlimits
   // to the max negative and positive values.
@@ -260,6 +258,5 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   for (uint t = 1; t < N; t++) {
     result.push_back(solution.x[y_start + t]);
   } 
-  // std::cout << "size of solution: " << solution.x.size() << std::endl;
   return result;
 }

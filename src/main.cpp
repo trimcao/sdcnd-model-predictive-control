@@ -92,14 +92,11 @@ int main() {
           double psi = j[1]["psi"];
           double v = j[1]["speed"];
 
-
           // simulate the vehicle in 100ms to account for latency
-          // assume that v and psi stays the same
+          // assume that v and psi stay the same
           double dt = 0.1;
           px = px + v * cos(psi) * dt;
           py = py + v * sin(psi) * dt;
-          // psi = psi0 + (v0/Lf) * delta0 * dt);
-          // v = v0 + a0*dt;
 
           // transform waypoints from map coordinates to car coordinates
           Eigen::VectorXd x_vals(ptsx.size()); 
@@ -110,13 +107,11 @@ int main() {
           }
 
           auto coeffs = polyfit(x_vals, y_vals, 3);
-          // std::cout << "Size of coeffs: " << coeffs.size() << std::endl;
           // The cross track error is calculated by evaluating at polynomial at x, f(x)
           // and subtracting y.
           double cte = polyeval(coeffs, 0.0);
           // Due to the sign starting at 0, the orientation error is -f'(x).
           // derivative of coeffs[0] + coeffs[1] * x + coeffs[2] * x^2 + coeffs[3] * x^3 -> coeffs[1]
-          // double epsi = psi - atan(coeffs[1] + coeffs[2]*2*px + coeffs[3]*3*pow(px, 2));
           double epsi = psi - atan(coeffs[1]);
 
           /*
